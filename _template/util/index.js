@@ -1,18 +1,31 @@
+const writeJsonRef = require("write-json");
+const fs = require("fs");
 const path = require("path");
 const readline = require("readline");
 
 const rootDir = path.resolve(__dirname, "..");
 const getPath = (...paths) => path.resolve(rootDir, ...paths);
+
 const rootPackagePath = getPath("package.json");
 const credentialDir = getPath("settings/key.json");
 
-const fse = require("fs-extra");
 
-const fs = require("fs");
 
 // Credit for package.json fun (MIT) https://github.com/storybookjs/storybook/blob/50367f9fa9ddb2fbec2177d7192ea88b62efe5e2/lib/cli/src/js-package-manager/PackageJsonHelper.ts
-function writeJson(filePath, content) {
-    return fse.writeJson(filePath, content);
+function writeJson(path, data) {
+    return new Promise((resolve, reject) => {
+        writeJsonRef(path, data, function (err, data) {
+            if (err) {
+                reject({
+                    err,
+                });
+            } else {
+                resolve({
+                    data,
+                });
+            }
+        });
+    });
 }
 
 function readPackageJson(packageJsonPath) {
@@ -96,5 +109,5 @@ module.exports = {
     askQuestion,
     credentialDir,
     confirm,
-    rootPackagePath
+    rootPackagePath,
 };

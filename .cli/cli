@@ -12,7 +12,6 @@ const {
   runNPMScript,
   mkdir,
   copyDir,
-  copyFile,
   templateDir,
   writeJson,
   askQuestion,
@@ -60,6 +59,8 @@ async function main({
   if (directory && directory !== "") {
     const newPath = path.resolve(process.cwd(), directory);
     const buildDir = mkdir(newPath);
+
+
     const copy = await copyDir(templateDir, newPath).catch((e) =>
       console.log("<Error Copy>", e)
     );
@@ -74,16 +75,19 @@ async function main({
           `install:all`
         );
 
-        const proceed2 = await confirm(
-          `Do you want to set up your credential/API Key now? `
-        );
-
-        if (proceed2) {
-          const installDeps = await runNPMScript(
-            path.resolve(newPath),
-            `setcredential`
+        if (!credential) {
+          const proceed2 = await confirm(
+            `Do you want to set up your credential/API Key now? `
           );
+
+          if (proceed2) {
+            const installDeps = await runNPMScript(
+              path.resolve(newPath),
+              `setcredential`
+            );
+          }
         }
+
       } else {
         good(`Later, run the following:
           
