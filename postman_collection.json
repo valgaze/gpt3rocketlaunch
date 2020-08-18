@@ -1,0 +1,64 @@
+{
+	"variables": [],
+	"info": {
+		"name": "gpt3",
+		"_postman_id": "8774f41b-8223-7653-ad08-8c99b9421798",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [{
+			"name": "Who are you?",
+			"request": {
+				"url": "http://localhost:8000/chat",
+				"method": "POST",
+				"header": [{
+					"key": "Content-Type",
+					"value": "application/json",
+					"description": ""
+				}],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"prompt\":\"who are you?\"}"
+				},
+				"description": "Standard question to agent, no API Config or APIFlags"
+			},
+			"response": []
+		},
+		{
+			"name": "Who are you, full response",
+			"request": {
+				"url": "http://localhost:8000/chat",
+				"method": "POST",
+				"header": [{
+					"key": "Content-Type",
+					"value": "application/json",
+					"description": ""
+				}],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"prompt\": \"who are you?\",\n  \"APIConfig\": {\n    \"full_response\": true\n  },\n  \"APIFlags\": {\n    \"temperature\": 0.95\n  }\n}"
+				},
+				"description": "Standard question to agent\nAPIConfig: full_response\nAPIFlags: higher temperature"
+			},
+			"response": []
+		},
+		{
+			"name": "Joke",
+			"request": {
+				"url": "http://localhost:8000/joke",
+				"method": "GET",
+				"header": [{
+					"key": "Content-Type",
+					"value": "application/json",
+					"description": ""
+				}],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"prompt\": \"who are you?\",\n  \"APIConfig\": {\n    \"full_response\": true\n  },\n  \"APIFlags\": {\n    \"temperature\": 0.95\n  }\n}"
+				},
+				"description": "Ask for a joke (adjust max_tokens & temperature for better results)"
+			},
+			"response": []
+		}
+	]
+}

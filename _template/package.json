@@ -1,0 +1,41 @@
+{
+  "name": "gpt3rocketlaunch",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "init": "npm run install:all && npm run setcredential",
+    "set-typescript": "cd util && node cli.js set_typescript",
+    "setup": "npm run install:all && npm run setcredential",
+    "clearkey_force": "npm run clearkey -- -y",
+    "clearkey": "cd util && node cli.js reset_credential",
+    "setkey": "npm run setcredential --silent",
+    "setcredential": "cd util && node cli.js set_credential",
+    "install:js": "cd javascript && npm i",
+    "install:ts": "cd typescript && npm i",
+    "install:all": "npm i && npm run install:js && npm run install:ts",
+    "server": "cd $npm_package_config_type && npm start",
+    "serve": "npm run server",
+    "ts": "cd typescript && npm run main",
+    "js": "cd javascript && npm run main"
+  },
+  "keywords": [
+    "GPT3"
+  ],
+  "author": "Victor Algaze",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "1.19.0",
+    "cors": "2.8.5",
+    "express": "4.17.1",
+    "fs-extra": "9.0.1",
+    "gpt3rocket": "latest"
+  },
+  "config": {
+    "type": "javascript"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/valgaze/gpt3rocketlaunch"
+  }
+}

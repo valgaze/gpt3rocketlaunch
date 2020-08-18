@@ -1,0 +1,174 @@
+#!/usr/bin/env node
+
+const argv = require("minimist")(process.argv.slice(2));
+const path = require("path");
+const {
+  loud,
+  good,
+  bad
+} = require("./../logger");
+const launch = require("./../launcher");
+const {
+  runNPMScript,
+  mkdir,
+  copyDir,
+  copyFile,
+  templateDir,
+  writeJson,
+  askQuestion,
+} = require("./../util/index");
+const {
+  confirm
+} = require("./../util/index");
+const {
+  dir
+} = require("console");
+const dumbLoad = (pathRef) => {
+  let payload = {};
+  try {
+    payload = require(pathRef);
+  } catch (e) {
+    bad(`Catastrophic error loading in key`);
+    console.log(e);
+    bad("Exiting...\n");
+    process.exit(1);
+  }
+  return payload;
+};
+
+// npm run cli alo -- --key=/user/abc/key.json ui
+
+const {
+  key,
+  _: commands,
+  y = false,
+  p: port,
+  c: credential,
+  n: directory,
+} = argv;
+const rootPath = path.resolve(__dirname, "..", "_template");
+
+let skip_confirms = Boolean(y);
+// if (!skip_confirms) {
+//   skip_confirms = Boolean(credential);
+// }
+
+async function main({
+  directory
+}) {
+  // Case: create new scaffold
+  if (directory && directory !== "") {
+    const newPath = path.resolve(process.cwd(), directory);
+    const buildDir = mkdir(newPath);
+    const copy = await copyDir(templateDir, newPath).catch((e) =>
+      console.log("<Error Copy>", e)
+    );
+
+    if (!skip_confirms) {
+      const proceed = await confirm(
+        `Do you want to install dependencies now? (Yes recommended) `
+      );
+      if (proceed) {
+        const installDeps = await runNPMScript(
+          path.resolve(newPath),
+          `install:all`
+        );
+
+        const proceed2 = await confirm(
+          `Do you want to set up your credential/API Key now? `
+        );
+
+        if (proceed2) {
+          const installDeps = await runNPMScript(
+            path.resolve(newPath),
+            `setcredential`
+          );
+        }
+      } else {
+        good(`Later, run the following:
+          
+cd ${newPath}
+npm run install:all
+          `);
+      }
+    } else {
+      const installDeps = await runNPMScript(
+        path.resolve(newPath),
+        `install:all`
+      );
+    }
+
+    if (credential) {
+      // Write destination/settings/key.json
+      const switchConfig = await writeJson(
+        path.resolve(newPath, "settings", "key.json"), {
+          key: credential,
+        }
+      );
+    }
+
+    if (commands.includes("ts")) {
+      // switch package.json to typescript
+      const switchConfig = await runNPMScript(
+        path.resolve(newPath),
+        `set-typescript`
+      );
+    }
+
+    loud(`Done, you can boot a backend here:
+    
+cd ${newPath}
+npm run server    
+    `);
+    // Goal intelligently run install in _template
+
+    // Exit on create op
+    return 0
+  }
+
+  if (commands.includes("serve")) {
+    if (!credential) {
+      loud(`Error: Missing credential/API key, pass thru using the -c flag:
+    
+$ rocketlaunch serve -c XX-XXXXXXXXXXXXXXX
+
+$ npx rocketlaunch serve -c XX-XXXXXXXXXXXXXXX
+    
+    `);
+
+      const apiKey = await askQuestion(
+        `if you have your API key, enter it here (or CTRL-C to quit) `
+      );
+      console.log(apiKey);
+      const config = {
+        credential: apiKey,
+        port,
+      };
+      return launch(config);
+    }
+  }
+
+  const config = {
+    credential,
+    port,
+  };
+
+  if (
+    commands.includes("learn") ||
+    commands.includes("gpt3") ||
+    commands.includes("gpt3101")
+  ) {
+    config.url = "https://gpt3.valgaze.com";
+  }
+
+  if (commands.includes("resources")) {
+    config.url =
+      "https://github.com/valgaze/gpt3-chat/blob/master/docs/resources.md";
+  }
+
+  launch(config);
+}
+main({
+  directory,
+  credential,
+});

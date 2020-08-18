@@ -1,0 +1,44 @@
+{
+  "name": "rocketlaunch",
+  "version": "1.0.0",
+  "description": "Little helper CLI to easily scaffold projects & prototype interactions with GPT3 language model",
+  "bin": {
+    "gpt3-rocketlaunch": ".cli/cli",
+    "rocketlaunch": ".cli/cli"
+  },
+  "main": "index.js",
+  "dependencies": {
+    "@npmcli/run-script": "1.5.0",
+    "body-parser": "1.19.0",
+    "chalk": "4.1.0",
+    "execa": "4.0.3",
+    "express": "4.17.1",
+    "fs-extra": "9.0.1",
+    "gpt3rocket": "1.0.1",
+    "minimist": "1.2.5",
+    "open": "7.1.0",
+    "portfinder": "1.0.28"
+  },
+  "devDependencies": {
+    "np": "^6.4.0",
+    "ts-node": "^8.10.2",
+    "typescript": "^3.9.7"
+  },
+  "scripts": {
+    "cli": "cd .cli && node cli",
+    "start": "node launcher.js"
+  },
+  "keywords": [
+    "gpt3",
+    "gpt3-rocket",
+    "transformer",
+    "language model",
+    "chatbot"
+  ],
+  "author": "Victor Algaze",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/valgaze/gpt3rocketlaunch"
+  }
+}
