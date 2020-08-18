@@ -1,5 +1,7 @@
-const fse = require('fs-extra')
 const runScript = require("@npmcli/run-script");
+const copydir = require("copy-dir");
+const makeDir = require("make-dir");
+const writeJsonRef = require("write-json");
 
 const path = require("path");
 const readline = require("readline");
@@ -113,14 +115,51 @@ const runNPMScript = async (folderPath, cmd, args = []) => {
       })
       .catch((er) => {
         reject({
-          err: er
+          err: er,
         });
       });
   });
 };
 
-function writeJson(filePath, content) {
-  return fse.writeJson(filePath, content);
+
+
+function writeJson(path, data) {
+  return new Promise((resolve, reject) => {
+    writeJsonRef(path, data, function (err, data) {
+      if (err) {
+        reject({
+          err
+        })
+      } else {
+        resolve({
+          data
+        })
+      }
+    });
+  })
+}
+
+
+function copyDir(to, from) {
+
+  const filter = (state, filePath, filename) => {
+    return !filePath.includes('node_modules')
+  }
+  return new Promise((resolve, reject) => {
+    copydir(to, from, {
+      filter
+    }, function (err, rest = {}) {
+      if (err) {
+        reject({
+          err,
+        });
+      } else {
+        resolve({
+          data: rest,
+        });
+      }
+    });
+  });
 }
 
 module.exports = {
@@ -129,8 +168,7 @@ module.exports = {
   runNPMScript,
   confirm,
   templateDir: templateRoot,
-  mkdir: fse.ensureDir,
-  copyFile: fse.copy,
-  copyDir: fse.copy,
-  writeJson
+  mkdir: makeDir,
+  copyDir,
+  writeJson,
 };
