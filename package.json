@@ -1,6 +1,6 @@
 {
   "name": "rocketlaunch",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Little helper CLI to easily scaffold projects & prototype interactions with GPT3 language model",
   "bin": {
     "gpt3-rocketlaunch": ".cli/cli",
