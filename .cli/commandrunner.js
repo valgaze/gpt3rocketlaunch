@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 // export interface Command {
 //   name: string | string[];
 //   handler: (object) => any;
@@ -7,65 +6,44 @@
 
 // }
 /**
- * $ npx rocketlaunch learn
- * $ npx rocketlaunch resources
- *
  * $ npx rocketlaunch create
  * $ npx rocketlaunch create -n my_directory
  * $ npx rocketlaunch create -n "new project"
  *
- * $ npx rocketlaunch -k XX-XXXXXXXX
- * $ npx rocketlaunch -f ~/Desktop/key.json
- * $ npx rocketlaunch -p 8005
- * $ npx rocketlaunch -q "make the google logo & 2 gray buttons" -k XX-XXXXXXX
- * $ npx rocketlaunch serve -k XX-XXXXXXXX -r /beer -p 8005
  *
- * $ npx rocketlaunch create -n mydir -f key.json -y && cd mydir && npm start
- * $ npx rocketlaunch serve -f key.json
+ * $ npx rocketlaunch serve -c XX-XXXXXXXX
+ * $ npx rocketlaunch serve -f ~/Desktop/key.json
+ * $ npx rocketlaunch serve -p 8005
+ * $ npx rocketlaunch serve -c XX-XXXXXX -r /beer
  *
- * # [x] create: scaffold a project
- *   -k specified, don't ask for API key, otherwise ask quiz
- *   -n specified, don't ask for directory name, just create a new directory
- *   -f filepath to API key file (needs form {"key":"XX-XXXXXXXX"})
- *   - Alias: init, build, scaffold
+ *
+ * # create: scaffold a project
+ *  Alias: init, build, scaffold
+ *  -c specified, don't ask for API key, otherwise ask quiz
+ *  -n specified, don't ask for directory name, just create a new directory
  *
  * # serve: serve endpoint on /chat
  *  -r set an additional route with
  *  -c set the credential, otherwise ask
  *  -p set the port
- *  -f set filepath to API key
- *  - Alias: init, start, server
+ *  -f set flag
  *
  * [x] # learn
  * [x] # resources
- * [x] # biscotti
  * -y flag
- * -d flag: debug
  */
 
 const argv = require("minimist")(process.argv.slice(2));
 const path = require("path");
-const { openBrowser } = require("./open_browser");
-
 const {
-  runNPMScript,
+  // runNPMScript,
   mkdir,
   copyDir,
   templateDir,
   writeJson,
   askQuestion,
   loud,
-  good,
-  readJSON,
-  confirm,
 } = require("./../util/index");
-
-const roster = require("./handler_roster");
-
-const launchBrowser = (url) => {
-  loud(`Attempt URL Open: ${url}`);
-  return openBrowser(url);
-};
 
 const commandRunner = async (candidate, commands, args = {}) => {
   const debug = (flag) => {
@@ -75,8 +53,9 @@ const commandRunner = async (candidate, commands, args = {}) => {
       }
     };
   };
-  const __debug = debug(args.debugFlag);
+  const __debug = debug(true);
 
+  console.log("##", args);
   const normalizer = (command) => {
     const normal = {
       name: [""],
@@ -96,8 +75,6 @@ const commandRunner = async (candidate, commands, args = {}) => {
     }
     return normal;
   };
-
-  // Helpers, facts about the world, inject as params
   // Facts about world, injected as params
   const __storage = {
     urls: {
@@ -106,6 +83,8 @@ const commandRunner = async (candidate, commands, args = {}) => {
         "https://github.com/valgaze/gpt3-chat/blob/master/docs/resources.md",
     },
   };
+
+  const launchBrowser = (x) => console.log("<launchBrowser>", x);
 
   // Find matching command if any
   // Match found, invoke handler w/ helpers
@@ -139,7 +118,6 @@ const commandRunner = async (candidate, commands, args = {}) => {
         cwd,
         path,
         __debug,
-        readJSON,
         args,
       };
       if (sync === true) {
@@ -163,15 +141,77 @@ const runCommands = (commands, roster, args) => {
   });
 };
 
+const roster = [
+  {
+    name: ["create", "build", "init", "start"],
+    handler: ({ args }) => {
+      console.log("#", args);
+      console.log(`WIP....
+      const runCommands = (commands, roster) => { let payload = commands if (typeof commands === 'string') { payload = [commands] } payload.forEach((command) => { commandRunner(command, roster) }) };
+      `);
+    },
+  },
+  {
+    name: ["serve", "init", "server", "serrve", "start", "st"],
+    handler: async ({ args }) => {
+      console.log("## route", args.route);
+      // Boot serve
+      // Pass on args
+    },
+  },
+  {
+    name: ["help", "helpme"],
+    handler: () => {
+      console.log(`
+$ npx rocketlaunch help
+Usage: rocketlaunch [command] [options]
+A helper to host an endpoint or scaffold a gpt3 project
+
+Commands:
+  learn (rocketlaunch learn)
+  serve (rocketlaunch serve -c XX-XXXXXXXX)
+  resources (rocketlaunch resources)
+  
+Options:
+  -n,  Create directory: -n my_directory
+  -c,  Pass in API credential: -c XX-XXXXXXXX
+  -p,  Set port: -p 5555
+
+
+Examples:
+  $ npx rocketlaunch serve -c XX-XXXXXXXX
+
+  $ npx rocketlaunch -n my_directory -c XX-XXXXXXXX`);
+    },
+  },
+  {
+    name: ["learn", "gpt3", "101"],
+    handler: ({ __storage, launchBrowser }) =>
+      launchBrowser(__storage.urls.deck),
+  },
+  {
+    name: "resources",
+    exactMatch: true,
+    handler: ({ __storage, launchBrowser }) =>
+      launchBrowser(__storage.urls.resources),
+  },
+  {
+    name: "*",
+    handler: ({ __storage, launchBrowser }) => {
+      console.log(`${new Date()}: ${JSON.stringify(__storage)}`);
+    },
+  },
+];
+
 const notice = () => {
   if (msg) {
     loud(msg);
   } else {
-    loud(`Error: Missing credential/API key, pass thru using the -k flag:
+    loud(`Error: Missing credential/API key, pass thru using the -c flag:
     
-    $ rocketlaunch serve -k XX-XXXXXXXXXXXXXXX
+    $ rocketlaunch serve -c XX-XXXXXXXXXXXXXXX
     
-    $ npx rocketlaunch serve -k XX-XXXXXXXXXXXXXXX
+    $ npx rocketlaunch serve -c XX-XXXXXXXXXXXXXXX
   `);
   }
 };
@@ -185,73 +225,26 @@ const askData = async (msg) => {
 const askAPIKey = async () =>
   await askData(`If you have your API key, enter it here (or CTRL-C to quit)`);
 
-const validRoute = (route) => {
-  const res = route && route.charAt("/") === "/" ? route : undefined;
-  if (!res && route !== undefined) {
-    console.log(`Route path invalid, discarding '${route}'`);
-  }
-  return res;
-};
+const validRoute = (route) =>
+  route && route.charAt("/") === "/" ? route : undefined;
 
 // process.argv
 const {
   _: commands,
   y = false,
-  f: filePath,
   p: port,
-  k: credential,
-  n: newDirectoryCandidate,
+  c: credential,
+  n: directory,
   r: route,
-  d: debugFlag,
-  m: message,
 } = argv;
 
-const newDirectory = newDirectoryCandidate
-  ? path.resolve(process.cwd(), newDirectoryCandidate)
-  : null;
-
 const all_args = {
-  filePath,
   port,
   credential,
-  newDirectory,
+  directoryName: directory,
+  directoryPath: directory ? path.resolve(process.cwd(), directory) : null,
   skipConfirms: Boolean(y),
   route: validRoute(route),
-  debugFlag,
-  message,
 };
 
-async function main(commands, roster, all_args) {
-  const { filePath, port } = all_args;
-
-  if (typeof port === "boolean") {
-    all_args.port = undefined;
-  }
-
-  if (!commands.length) commands.push("serve");
-  if (filePath) {
-    const { key } = await readJSON(filePath).catch((e) => {
-      console.log(
-        `<rocketlaunch ERROR> Cannot find API Key file (-f flag): ${filePath}`
-      );
-      console.log(`Confirm the file exists and has a "key" property, or use the -k flag to pass in the credential directly
-
-ex. 
-
-$ npx rocketlaunch serve -k XX-XXXXXXX
-
-$ rocketlaunch create -n mydirectory -k XX-XXXXXX
-      `);
-      process.exit(1);
-    });
-
-    if (key) {
-      // File if valid will override
-      all_args.credential = key;
-    }
-  }
-
-  runCommands(commands, roster, all_args);
-}
-
-main(commands, roster, all_args);
+runCommands(commands, roster, all_args);

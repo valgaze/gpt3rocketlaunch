@@ -12,8 +12,10 @@ module.exports = ({
   host,
   staticPath,
   indexPath,
-  credential
+  credential,
+  route
 }) => {
+  const rootPath = path.resolve(__dirname, '..')
   const portRef = port || 8000;
   // UI
   if (staticPath && indexPath) {
@@ -22,9 +24,9 @@ module.exports = ({
       res.sendFile(path.resolve(indexPath));
     });
   } else {
-    app.use(express.static(path.resolve(__dirname, "frontend")));
+    app.use(express.static(path.resolve(rootPath, "frontend")));
     app.get("/", (req, res) => {
-      res.sendFile(path.resolve(__dirname, "frontend", "index.html"));
+      res.sendFile(path.resolve(rootPath, "frontend", "index.html"));
     });
   }
 
@@ -38,10 +40,14 @@ module.exports = ({
     // Endpoint
     app.post("/chat", gpt3);
     app.post("/ask", gpt3);
+
+    if (route) {
+      app.post(route, gpt3);
+    }
   } else {
     app.post("/chat", (req, res) => {
       res.send({
-        text: `[Warning] Backend is not configured with a credential`,
+        text: `[Warning] Backend is not configured with a credential. For more information, from your terminal run $ npx rocketlaunch help `,
       });
     });
   }

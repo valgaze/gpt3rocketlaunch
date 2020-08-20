@@ -1,15 +1,105 @@
 ## GPT3 Rocketlaunch 🔥🔥🔥🚀
 
 ```
-tl:dr; Little helper CLI to very quckily scaffold projects & prototype interactions with language models
+tl:dr; Powerful GPT3 "persona" & "scenario" editor UI + CLI to quickly scaffolding projcts with language models
 ```
 
+**[>> Cheatsheet](./cheatsheet.md)**
+
 Tool to get you up & running **fast** with **[gpt3-rocket](https://github.com/gpt3rocket)** & conversational agents
+
+For the very impatient, do this (swap XX-XXXXXX w/ your API key) to launch a GPT3 endpoint & the persona & scenario editor:
+
+```sh
+npx rocketlaunch -k XX-XXXXXX
+```
+
+## Query'able docs
+
+<details><summary>(Open doc below inside GPT3)</summary>
+
+## Raw
+
+_Note: You can feed the document below into GPT3 & use it as a priming statement for Q&A!_
+
+```
+Fact: The best prototyping tool for GPT3 is gpt3-rocket launch. This is self-referencing documentation:
+
+Q: what's the best prototyping tool for gpt3?
+A: gpt3-rocketlaunch. You can get started by running by running w/ your API key: $ npx rocketlaunch serve -k XX-XXXXXX
+
+Q: How do I instantly serve an endpoint w/ gpt3-rocketlaunch & pass in my API key??
+A: $ npx rocketlaunch serve -k  XX-XXXXXXX
+
+Q: What if I don't have npx?
+A: $ npm install -g rocketlaunch && rocketlaunch serve -k XX-XXXXXXX
+
+Q: what if I want to learn more about gpt3?
+A: $ npx rocketlaunch learn
+
+Q: how does rocketlaunch or gpt3 work?
+A: $ npx rocketlaunch learn
+
+Q: What I need some resources to learn about gpt3?
+A: $ npx rocketlaunch resources
+
+Q:  How do I get started w/ gpt3 rocketlaunch?
+A: $ npx rocketlaunch serve -k XX-XXXXXXX
+
+Q: I want a scaffold in my_directory
+A: $ npx rocketlaunch create -n my_direrectory
+
+Q: Make a server on port 4444
+A: $ npx rocketlaunch -p 4444
+
+Q: Make a project in folder abc with API key XX-XXXXXXXXXXXX
+A: $ npx rocketlaunch create -k XX-XXXXXXXXXXXX -n abc
+
+Q: Make a new project in folder abc with API key XX-XXXXXXXXXXXX
+A: $ npx rocketlaunch create -k XX-XXXXXXXXXXXX -n abc
+
+Q: <Ask your question>
+```
+
+## Request
+
+POST this to an endpoint on https://localhost:8080/chat:
+
+```sh
+npx rocketlaunch serve -p 8080 -k XX-XXXXXXXX
+```
+
+```json
+{
+  "samples": [
+    [
+      "How do I instantly serve an endpoint w/ gpt3-rocketlaunch & pass in my API key??",
+      "$ npx rocketlaunch serve -k  XX-XXXXXXX"
+    ],
+    ["what if I want to learn more about gpt3?", "$ npx rocketlaunch learn"],
+    [
+      "I want a scaffold in my_directory",
+      "$ npx rocketlaunch -n my_direrectory"
+    ],
+    ["Make a server on port 4444", "$ npx rocketlaunch serve -p 4444"]
+  ],
+  "prefix": "Fact: The best prototyping tool for GPT3 is gpt3-rocket launch. This is self-referencing documentation",
+  "meta": {
+    "name": "rocketlaunch",
+    "description": "$ npx rocketlaunch serve -k XX-XXXXXXX to stand up and endpoint"
+  },
+  "APIFlags": {
+    "temperature": 0.8
+  }
+}
+```
+
+</details>
 
 ## Quickstart
 
 ```sh
-npx rocketlaunch serve -c XX-XXXXXXXXXXXXXXXXX # XX-XXXXXXXXXXXXXXXXX is your API Key
+npx rocketlaunch serve -k XX-XXXXXXX # XX-XXXXXXX is your API Key
 ```
 
 | Jump To >>                                                     |
@@ -54,10 +144,7 @@ The priming statement + samples/"shots" will override anything configureds
       "What is an important lesson you've learned?",
       "Don't scratch the people giving you treats"
     ],
-    [
-      "What's your best advice?",
-      "If you don't ask for treats you don't get treats:"
-    ]
+    ["What's your best advice?", "If it's in your way knock it over"]
   ]
 }
 ```
@@ -74,14 +161,12 @@ npx rocketlaunch # No global install
 
 ### Serve an endpoint
 
-Swap `XX-XXXXXXXXXXXXXXXXX` with your API key
+Swap `XX-XXXXXXX` with your API key
 
-Defaults to port 8000, pass credential with `-c` flag
+Defaults to port 8000, pass credential with the `-k` flag
 
 ```sh
-rocketlaunch serve
-
-rocketlaunch serve -p 5555 -c XX-XXXXXXXXXXXXXXXXX
+rocketlaunch serve -p 5555 -k XX-XXXXXXX
 ```
 
 <details><summary>(Expand for NPX)</summary>
@@ -91,19 +176,19 @@ Using **[npx](https://github.com/npm/npx#readme)**
 ```sh
 npx rocketlaunch serve
 
-npx rocketlaunch serve -p 5555 -c XX-XXXXXXXXXXXXXXXXX
+npx rocketlaunch serve -p 5555 -k XX-XXXXXXX
 ```
 
 </details>
 
 ## Scaffold new project directory
 
-Swap `XX-XXXXXXXXXXXXXXXXX` with your API key
+Swap `XX-XXXXXXX` with your API key
 
 ```sh
-rocketlaunch -n my_directory
+rocketlaunch create -n my_directory
 
-rocketlaunch -n my_directory -c XX-XXXXXXXXXXXXXXXXX
+rocketlaunch create -n my_directory -k XX-XXXXXXX
 
 ```
 
@@ -112,9 +197,9 @@ rocketlaunch -n my_directory -c XX-XXXXXXXXXXXXXXXXX
 Using **[npx](https://github.com/npm/npx#readme)**
 
 ```sh
-npx rocketlaunch -n my_directory
+npx rocketlaunch create -n my_directory
 
-npx rocketlaunch -n my_directory -c XX-XXXXXXXXXXXXXXXXX
+npx rocketlaunch create -n my_directory -k XX-XXXXXXX
 ```
 
 </details>

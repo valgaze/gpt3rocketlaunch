@@ -22,7 +22,7 @@ async function main(command) {
     const res = await writeJson(credentialDir, {
       key: credential,
     });
-    console.log("Credential set", res)
+    return res;
   }
 
   if (command === "reset_credential") {

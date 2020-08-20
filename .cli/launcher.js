@@ -1,17 +1,14 @@
+const path = require("path");
+
 const portfinder = require("portfinder");
 const server = require("./server");
-const {
-  openBrowser
-} = require("./open_browser");
-const {
-  loud
-} = require("./logger");
+const { loud, good } = require("./../util/logger");
+const { openBrowser } = require("./open_browser");
 
 const loudOpen = (url) => {
   loud(`Attempt URL Open: ${url}`);
   return openBrowser(url);
 };
-const path = require("path");
 
 module.exports = async function launch({
   port,
@@ -19,22 +16,27 @@ module.exports = async function launch({
   url,
   staticPath,
   indsexPath,
+  route,
+  message,
 }) {
-  if (url) {
-    return loudOpen(url);
-  }
   const portRef = port || (await portfinder.getPortPromise()); // get port
   const host = "localhost";
-  const {
-    app
-  } = await server({
+  const { app } = await server({
     credential,
     port: portRef,
     staticPath,
     indsexPath,
+    route,
   });
-
-  const altURL = `http://${host}:${portRef}`;
+  let altURL = `http://${host}:${portRef}`;
   loud(`[Server] Listening on ${altURL}\n\n[CTRL-C to quit]`);
+  if (route) {
+    good(`POST prompts to ${altURL}${route}`);
+  }
+
+  if (message) {
+    const extension = `?startmsg="${message}"`;
+    altURL = `${altURL}/#/${extension}`;
+  }
   loudOpen(altURL);
 };

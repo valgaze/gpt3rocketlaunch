@@ -4,11 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "npm run serve",
     "init": "npm run install:all && npm run setcredential",
     "set-typescript": "cd util && node cli.js set_typescript",
     "setup": "npm run install:all && npm run setcredential",
     "clearkey_force": "npm run clearkey -- -y",
     "clearkey": "cd util && node cli.js reset_credential",
+    "setapikey": "npm run setkey",
     "setkey": "npm run setcredential --silent",
     "setcredential": "cd util && node cli.js set_credential",
     "install:js": "cd javascript && npm i",
